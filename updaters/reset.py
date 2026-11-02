@@ -8,7 +8,7 @@ tables = [
     "Engines", "Tyres", "Chassis", "EngineModels", "Circuits", "CircuitLayouts",
     "GrandPrixResults", "PitStopSummary", "LapByLap",
     "DriversChampionship", "ConstructorsChampionship",
-    "InSeasonProgressDrivers", "InSeasonProgressConstructors", "Nationalities", "RaceReports", "Sessions", "MaxSpeeds", "RaceControlMessages", "WeatherData", "FamilyRelations", "HistoricalWeather", "ScheduleVersions", "Schedule", "ScheduleSessions", "CircuitMarkers", "RedFlags"
+    "InSeasonProgressDrivers", "InSeasonProgressConstructors", "Nationalities", "RaceReports", "Sessions", "MaxSpeeds", "RaceControlMessages", "WeatherData", "FamilyRelations", "HistoricalWeather", "ScheduleVersions", "Schedule", "ScheduleSessions", "CircuitMarkers", "RedFlags", "TelemetryIndex"
 ]
 
 for table in tables:
@@ -944,6 +944,25 @@ cursor.execute('''CREATE TABLE RedFlags (
     LeaderID INTEGER,
     FOREIGN KEY (GrandPrixID) REFERENCES GrandsPrix(ID),
     FOREIGN KEY (LeaderID) REFERENCES Drivers(ID)
+)''')
+
+cursor.execute('''CREATE TABLE TelemetryIndex (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    GrandPrixName TEXT,
+    SessionName TEXT,
+    Driver TEXT,
+    FilePath TEXT,
+    RowCount INTEGER,
+    LapCount INTEGER,
+    Source TEXT,
+    RetrievedAtUTC TEXT,
+    GrandPrixID INTEGER,
+    SessionID INTEGER,
+    DriverID INTEGER,
+    FOREIGN KEY (GrandPrixID) REFERENCES GrandsPrix(ID),
+    FOREIGN KEY (SessionID) REFERENCES Sessions(ID),
+    FOREIGN KEY (DriverID) REFERENCES Drivers(ID),
+    UNIQUE (SessionID, DriverID)
 )''')
 
 conn.commit()

@@ -1,6 +1,7 @@
 beautifulsoup4
 opencv-python
 numpy
+pyarrow
 fastf1
 timezonefinder
 deep_translator

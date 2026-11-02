@@ -26,6 +26,7 @@ from scrapers.circuit_layout_scraper import (
     parse_circuit_metadata,
     save_circuit_layout_version,
 )
+from scrapers.telemetry_scraper import save_telemetry as download_telemetry
 
 # 1. Convert Python date/time objects to ISO strings when saving to SQLite
 def adapt_datetime(dt):
@@ -750,6 +751,13 @@ def save_race_control_messages(cursor, year, round_number, grandprix_name, grand
             ))
 
         print(f"Race control messages saved for {grandprix_name} {matched_session['name']}")
+
+
+def save_telemetry_data(cursor, year, grandprix_name, grandprix_id):
+    # Telemetry is on by default; run `python writedb.py --notelemetry` to skip it.
+    if "--notelemetry" in sys.argv:
+        return
+    download_telemetry(cursor, year, grandprix_name, grandprix_id)
 
 
 def save_weather_data(cursor, year, round_number, grandprix_name, grandprix_id):
@@ -6299,6 +6307,8 @@ for season in seasons[index:]:
                 """,
                 (gp, pitstop['carnumber'], pitstop['driver'], pitstop['constructor'], pitstop['stopnumber'], pitstop['lapstopped'], pitstop['durationspentinpitlane'], pitstop['timeinseconds'], pitstop['timeofday'], pitstop['totaltimeforthewholerace'], pitstop['totaltimeinseconds'], duration_stopped_in_pitbox, race_session['name'], race_session['id'], grandprix_id, driver_id, constructor_id))
             #print("Pit Stop Summary:", pitstopsummary) 
+
+        save_telemetry_data(cur, year, gp, race_info['race_number'])
 
         if trigger2 == True:
             driverschampionship, constructorschampionship = parse_championship_results(year, name_map)
